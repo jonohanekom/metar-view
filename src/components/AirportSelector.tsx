@@ -1,78 +1,76 @@
 import React, { useState, useEffect } from 'react';
 
-interface Runway {
-  number: string;
-  heading: number;
-}
-
 interface Airport {
   icao: string;
   name: string;
-  runways: Runway[];
+  runways: Array<{ number: string; heading: number | string }>;
 }
 
 interface AirportSelectorProps {
-  maxSelection?: number;
-  onSelect: (selected: Airport[]) => void;
+  onSelect: (airports: Airport[]) => void;
 }
 
-const AirportSelector: React.FC<AirportSelectorProps> = ({ maxSelection = 4, onSelect }) => {
+const AirportSelector: React.FC<AirportSelectorProps> = ({ onSelect }) => {
   const [airports, setAirports] = useState<Airport[]>([]);
-  const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Airport[]>([]);
+  const [selectedAirports, setSelectedAirports] = useState<Airport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('src/data/airports.json')
-      .then(res => res.json())
-      .then(setAirports)
-      .catch(() => setAirports([]));
+    fetch('/airports.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load airports.json');
+        return res.json();
+      })
+      .then(data => {
+        setAirports(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
   }, []);
 
-  const filtered = airports.filter(a =>
-    a.icao.toLowerCase().includes(search.toLowerCase()) ||
-    a.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const toggleSelect = (airport: Airport) => {
-    if (selected.find(a => a.icao === airport.icao)) {
-      setSelected(selected.filter(a => a.icao !== airport.icao));
-    } else if (selected.length < maxSelection) {
-      setSelected([...selected, airport]);
+  const handleAirportSelect = (airport: Airport) => {
+    if (selectedAirports.find(a => a.icao === airport.icao)) {
+      setSelectedAirports(selectedAirports.filter(a => a.icao !== airport.icao));
+    } else if (selectedAirports.length < 4) {
+      setSelectedAirports([...selectedAirports, airport]);
     }
   };
 
-  useEffect(() => {
-    onSelect(selected);
-  }, [selected, onSelect]);
-
   return (
-    <div className="p-4 bg-gray-800 rounded-lg w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-bold mb-2 text-white">Select up to {maxSelection} Airports</h2>
-      <input
-        className="w-full p-2 mb-4 rounded bg-gray-700 text-white"
-        placeholder="Search airport by ICAO or name..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
-      <ul className="max-h-64 overflow-y-auto divide-y divide-gray-700">
-        {filtered.map(airport => (
-          <li
+    <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-2xl w-full">
+      <h2 className="text-xl font-bold mb-4">Select Airports (Max 4)</h2>
+      {loading && <div className="text-gray-300">Loading airports...</div>}
+      {error && <div className="text-red-400">{error}</div>}
+      {!loading && airports.length === 0 && !error && (
+        <div className="text-yellow-400">No airports found.</div>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {airports.map((airport) => (
+          <div
             key={airport.icao}
-            className={`flex items-center justify-between p-2 cursor-pointer hover:bg-gray-700 rounded ${selected.find(a => a.icao === airport.icao) ? 'bg-blue-600 text-white' : 'text-gray-200'}`}
-            onClick={() => toggleSelect(airport)}
+            className={`p-4 rounded cursor-pointer transition-colors ${
+              selectedAirports.find(a => a.icao === airport.icao)
+                ? 'bg-blue-600'
+                : 'bg-gray-700 hover:bg-gray-600'
+            }`}
+            onClick={() => handleAirportSelect(airport)}
           >
-            <span>{airport.icao} - {airport.name}</span>
-            {selected.find(a => a.icao === airport.icao) && <span className="ml-2">✓</span>}
-          </li>
+            <div className="font-semibold">{airport.icao}</div>
+            <div className="text-sm text-gray-300">{airport.name}</div>
+          </div>
         ))}
-      </ul>
-      <div className="mt-4 flex justify-end">
+      </div>
+      <div className="mt-6 flex justify-end">
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-          disabled={selected.length === 0}
-          onClick={() => onSelect(selected)}
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded disabled:opacity-50"
+          onClick={() => onSelect(selectedAirports)}
+          disabled={selectedAirports.length === 0}
         >
-          Confirm
+          Confirm Selection
         </button>
       </div>
     </div>

@@ -10,7 +10,8 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": ["src", "main"],
   "exclude": ["node_modules", "dist"]
