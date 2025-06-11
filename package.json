@@ -1,0 +1,29 @@
+{
+  "name": "metar-view",
+  "version": "1.0.0",
+  "description": "Electron-based METAR weather viewer",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build-main": "tsc main/main.ts --outDir main --module commonjs",
+    "prestart": "npm run build-main",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "electron": "^28.0.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+  }
+}

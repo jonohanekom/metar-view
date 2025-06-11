@@ -1,0 +1,205 @@
+You are an expert in electron.js, React, Typescript and TailwindCSS.
+
+
+# Electron METAR Viewer - Cursor AI Rules
+
+## Project Overview
+This is an Electron-based METAR weather viewer application that displays aviation weather data from the VATSIM API. The app allows users to select up to 4 airports and displays their current weather information in a modern, responsive interface.
+
+## Tech Stack
+- **Electron.js**: Desktop application framework
+- **React 18+**: UI library with functional components and hooks
+- **TypeScript**: Static typing for JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **VATSIM METAR API**: Weather data source (https://vatsim.dev/api/metar-api/)
+
+## Architecture Preferences
+
+### Electron Structure
+- Use separate main and renderer processes
+- Implement secure IPC communication between processes
+- Store user preferences in electron-store or similar
+- Handle window management and app lifecycle properly
+- Use contextIsolation and disable nodeIntegration for security
+
+### React Patterns
+- Prefer functional components with hooks over class components
+- Use custom hooks for complex state logic and API calls
+- Implement proper error boundaries for robust error handling
+- Use React.memo for performance optimization where appropriate
+- Prefer composition over inheritance
+
+### TypeScript Guidelines
+- Use strict TypeScript configuration
+- Define proper interfaces for METAR data structures
+- Use union types for airport codes and weather conditions
+- Implement proper type guards for API responses
+- Prefer type assertions only when absolutely necessary
+
+### State Management
+- Use React's built-in state management (useState, useReducer, useContext)
+- Implement custom hooks for METAR data fetching and caching
+- Use local storage or electron-store for persisting user airport selections
+- Consider implementing a simple state machine for app states (loading, error, success)
+
+## Code Style & Conventions
+
+### File Organization
+```
+/metar-view
+  /public
+  /src
+    /components
+      AirportSelector.tsx
+      MetarCard.tsx
+      Toolbar.tsx
+    /styles
+    /utils
+    App.tsx
+    index.tsx
+  /main
+    main.ts (Electron main process)
+  package.json
+```
+
+### Naming Conventions
+- Use PascalCase for React components and TypeScript interfaces
+- Use camelCase for functions, variables, and file names (except components)
+- Use SCREAMING_SNAKE_CASE for constants
+- Use kebab-case for CSS classes (Tailwind utilities)
+- Prefix custom hooks with "use" (e.g., useMetarData)
+
+### Component Patterns
+- Keep components small and focused on single responsibility
+- Use proper TypeScript props interfaces
+- Implement loading states and error handling in UI components
+- Use compound components pattern for complex UI elements
+- Prefer controlled components over uncontrolled ones
+
+## API Integration Guidelines
+
+### VATSIM METAR API
+- Base URL: https://vatsim.dev/api/metar-api/
+- Endpoint pattern: `/metar/{icao_code}`
+- Implement proper error handling for network requests
+- Add request timeout and retry logic
+- Cache responses appropriately to avoid excessive API calls
+- Handle rate limiting gracefully
+
+### Data Types
+```typescript
+interface MetarData {
+  icao: string;
+  metar: string;
+  timestamp: string;
+  // Add other fields based on actual API response
+}
+
+interface AirportSelection {
+  icao: string;
+  name?: string;
+  selected: boolean;
+}
+```
+
+## UI/UX Guidelines
+
+### Design System
+- Use a modern dark theme as primary with light theme option
+- Implement consistent spacing using Tailwind's spacing scale
+- Use a limited color palette with semantic colors for weather conditions
+- Ensure proper contrast ratios for accessibility
+- Use smooth transitions and micro-animations
+
+### Layout Patterns
+- Responsive grid layout for METAR cards (1-4 columns based on selection)
+- Modal dialog for airport selection on app launch
+- Header with app title and settings/refresh buttons
+- Status bar or footer with last update time and connection status
+
+### Weather Display
+- Clear typography hierarchy for METAR information
+- Color-coded weather conditions (VFR green, MVFR yellow, IFR red, LIFR purple)
+- Parsed weather elements with icons where appropriate
+- Raw METAR string available in expandable section
+
+## Performance Considerations
+- Implement efficient re-rendering with React.memo and useMemo
+- Use debounced API calls for real-time updates
+- Optimize bundle size with proper tree-shaking
+- Implement virtual scrolling if displaying large airport lists
+- Use lazy loading for non-critical components
+
+## Security Best Practices
+- Enable context isolation in Electron
+- Disable node integration in renderer process
+- Validate all data from external APIs
+- Sanitize user inputs (airport codes)
+- Use HTTPS for all API communications
+
+## Error Handling
+- Implement comprehensive error boundaries
+- Provide user-friendly error messages
+- Log errors appropriately (without sensitive data)
+- Handle offline scenarios gracefully
+- Provide fallback UI states
+
+## Testing Considerations
+- Write unit tests for utility functions and custom hooks
+- Test API integration with proper mocking
+- Test Electron main process functionality
+- Implement integration tests for critical user flows
+- Test accessibility compliance
+
+## Development Workflow
+- Use ESLint and Prettier for code formatting
+- Implement pre-commit hooks for code quality
+- Use TypeScript strict mode
+- Set up hot reload for development
+- Use proper git branching strategy
+- Use short but descriptive branch names and commit messages.
+
+## Common Patterns to Follow
+
+### Custom Hook Example
+```typescript
+const useMetarData = (icaoCodes: string[]) => {
+  const [data, setData] = useState<MetarData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Implementation here
+  
+  return { data, loading, error, refetch };
+};
+```
+
+### Component Example
+```typescript
+interface MetarCardProps {
+  data: MetarData;
+  onRemove?: () => void;
+}
+
+const MetarCard: React.FC<MetarCardProps> = ({ data, onRemove }) => {
+  // Implementation here
+};
+```
+
+## Dependencies to Consider
+- electron-builder (packaging)
+- electron-store (settings persistence)
+- axios or fetch (API calls)
+- date-fns (date formatting)
+- clsx (conditional CSS classes)
+- react-hot-toast (notifications)
+
+## Avoid These Patterns
+- Don't use jQuery or other DOM manipulation libraries
+- Avoid inline styles; prefer Tailwind classes
+- Don't store sensitive data in localStorage in renderer process
+- Avoid synchronous operations in main process
+- Don't ignore TypeScript errors or use 'any' type frequently
+- Avoid deep prop drilling; use context when appropriate
+
+Remember to implement proper loading states, error handling, and user feedback throughout the application. Focus on creating a smooth, responsive user experience that feels native to the desktop environment.
