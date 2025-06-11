@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AirportSelector from './components/AirportSelector';
 import { fetchMetars, MetarResult } from './utils/fetchMetar';
 import { parseMetar, ParsedMetar } from './utils/parseMetar';
+import RunwayWindCompass from './components/RunwayWindCompass';
 
 interface Airport {
   icao: string;
@@ -73,6 +74,13 @@ function App() {
                   <div className="text-sm text-gray-400">Runways: {airport.runways.map(r => r.number).join(', ')}</div>
                   {parsed ? (
                     <>
+                      <div className="flex justify-center my-2">
+                        <RunwayWindCompass
+                          runways={airport.runways.map(r => ({ number: r.number, heading: typeof r.heading === 'string' ? parseInt(r.heading) : r.heading }))}
+                          windDirection={parsed.wind.direction}
+                          windSpeed={parsed.wind.speed}
+                        />
+                      </div>
                       <div className="flex flex-col gap-1 mt-2">
                         <div className="flex justify-between items-center">
                           <span className="font-bold">Wind:</span>
@@ -92,7 +100,7 @@ function App() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="font-bold">Time:</span>
-                          <span>{parsed.time ? new Date(parsed.time).toLocaleString() : '—'}</span>
+                          <span>{parsed.time || '—'}</span>
                         </div>
                       </div>
                       <div className="mt-2 text-xs bg-gray-900 rounded p-2 font-mono">{parsed.raw}</div>
