@@ -1,0 +1,34 @@
+[
+  {
+    "icao": "FACT",
+    "name": "Cape Town International Airport",
+    "runways": [
+      { "number": "16/34", "heading": 160 },
+      { "number": "01/19", "heading": 10 }
+    ]
+  },
+  {
+    "icao": "FAOR",
+    "name": "O. R. Tambo International Airport",
+    "runways": [
+      { "number": "03L/21R", "heading": 30 },
+      { "number": "03R/21L", "heading": 30 },
+      { "number": "04/22", "heading": 40 }
+    ]
+  },
+  {
+    "icao": "FALE",
+    "name": "King Shaka International Airport",
+    "runways": [
+      { "number": "06/24", "heading": "060" }
+    ]
+  },
+  {
+    "icao": "FAPE",
+    "name": "Chief Dawid Stuurman International Airport",
+    "runways": [
+      { "number": "08/26", "heading": "086" },
+      { "number": "35/17", "heading": "354" }
+    ]
+  }
+] 
