@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 interface Airport {
   icao: string;
   name: string;
-  runways: Array<{ number: string; heading: number | string }>;
+  runways: Array<{ number: string; heading: number[] }>;
 }
 
 interface AirportSelectorProps {

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import AirportSelector from './components/AirportSelector';
 import { fetchMetars, MetarResult } from './utils/fetchMetar';
 import { parseMetar, ParsedMetar } from './utils/parseMetar';
-import RunwayWindCompass from './components/RunwayWindCompass';
+import MetarPanel from './components/MetarPanel';
 
 interface Airport {
   icao: string;
   name: string;
-  runways: Array<{ number: string; heading: number | string }>;
+  runways: Array<{ number: string; heading: number[] }>;
 }
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
         </div>
       )}
       <header className="w-full p-4 text-center text-2xl font-bold">METAR Viewer</header>
-      <main className="flex flex-wrap gap-4 justify-center mt-8">
+      <main className="flex flex-wrap gap-8 justify-center mt-8">
         {selectedAirports.length === 0 ? (
           <div className="text-gray-400">No airports selected.</div>
         ) : loading ? (
@@ -59,57 +59,30 @@ function App() {
           <div className="text-red-400">Error: {error}</div>
         ) : (
           <>
-            {/* Print all raw METARs for debugging */}
-            <div className="w-full mb-4">
-              <div className="text-xs text-gray-400 font-mono">Raw METARs:</div>
-              {metars.map((m) => (
-                <div key={m.icao} className="text-xs bg-gray-900 rounded p-1 font-mono mb-1">{m.metar}</div>
-              ))}
-            </div>
             {selectedAirports.map((airport) => {
               const parsed = parsedMetars.find(m => m.icao === airport.icao);
-              return (
-                <div key={airport.icao} className="bg-gray-800 rounded p-4 min-w-[300px] max-w-xs flex flex-col gap-2 shadow-lg">
-                  <div className="font-semibold text-lg">{airport.icao} - {airport.name}</div>
-                  <div className="text-sm text-gray-400">Runways: {airport.runways.map(r => r.number).join(', ')}</div>
-                  {parsed ? (
-                    <>
-                      <div className="flex justify-center my-2">
-                        <RunwayWindCompass
-                          runways={airport.runways.map(r => ({ number: r.number, heading: typeof r.heading === 'string' ? parseInt(r.heading) : r.heading }))}
-                          windDirection={parsed.wind.direction}
-                          windSpeed={parsed.wind.speed}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1 mt-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold">Wind:</span>
-                          <span>{parsed.wind.direction !== null ? `${parsed.wind.direction}°` : '—'} @ {parsed.wind.speed !== null ? `${parsed.wind.speed}kt` : '—'}{parsed.wind.gust ? ` (G${parsed.wind.gust})` : ''}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold">Temp:</span>
-                          <span>{parsed.temperature !== null ? `${parsed.temperature}°C` : '—'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold">QNH:</span>
-                          <span>{parsed.qnh !== null ? `${parsed.qnh} hPa` : '—'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold">Clouds:</span>
-                          <span>{parsed.clouds || '—'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold">Time:</span>
-                          <span>{parsed.time || '—'}</span>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs bg-gray-900 rounded p-2 font-mono">{parsed.raw}</div>
-                    </>
-                  ) : (
-                    <div className="text-xs text-gray-400">No parsed METAR data.</div>
-                  )}
-                </div>
-              );
+              const metarRaw = metars.find(m => m.icao === airport.icao)?.metar || '';
+              // Placeholder logic for VFR/IFR, weather icon, wind text, visibility, ceiling, time
+              return parsed ? (
+                <MetarPanel
+                  key={airport.icao}
+                  icao={airport.icao}
+                  name={airport.name}
+                  runways={airport.runways}
+                  vfrStatus={"VFR"}
+                  temp={parsed.temperature}
+                  weatherIcon={<span>🌙</span>}
+                  windSpeed={parsed.wind.speed}
+                  windGust={parsed.wind.gust}
+                  windDirection={parsed.wind.direction}
+                  windText={parsed.wind.direction !== null ? `${parsed.wind.direction}°` : '--'}
+                  visibility={"10 km+"}
+                  ceiling={parsed.clouds || 'None'}
+                  qnh={parsed.qnh}
+                  time={parsed.time}
+                  metar={metarRaw}
+                />
+              ) : null;
             })}
           </>
         )}
