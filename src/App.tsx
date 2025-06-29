@@ -39,8 +39,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
       {showSelector && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" style={{ display: 'flex' }}>
-          <div className="bg-red-500 p-4">Debug: Dialog should be visible</div>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <AirportSelector
             onSelect={(airports: Airport[]) => {
               setSelectedAirports(airports);
@@ -50,7 +49,13 @@ function App() {
         </div>
       )}
       <header className="w-full p-4 text-center text-2xl font-bold">METAR Viewer</header>
-      <main className="flex flex-wrap gap-8 justify-center mt-8">
+      <main className={`w-full px-2 mt-8 ${
+        selectedAirports.length === 1 ? 'max-w-4xl mx-auto' :
+        selectedAirports.length === 2 ? 'max-w-6xl mx-auto grid grid-cols-2 gap-3' :
+        selectedAirports.length === 3 ? 'max-w-full grid grid-cols-3 gap-2' :
+        selectedAirports.length === 4 ? 'max-w-5xl mx-auto grid grid-cols-2 gap-3' :
+        'flex justify-center'
+      }`}>
         {selectedAirports.length === 0 ? (
           <div className="text-gray-400">No airports selected.</div>
         ) : loading ? (
@@ -81,6 +86,7 @@ function App() {
                   qnh={parsed.qnh}
                   time={parsed.time}
                   metar={metarRaw}
+                  cardSize={selectedAirports.length}
                 />
               ) : null;
             })}

@@ -11,15 +11,17 @@ interface Props {
   windSpeed: number | null;
   windGust?: number | null;
   qnh?: number | null;
+  size?: number;
 }
-
-const size = 340, center = size / 2, radius = center - 40;
 
 function degToRad(deg: number) {
   return ((deg - 90) * Math.PI) / 180;
 }
 
-const RunwayWindCompass: React.FC<Props> = ({ runways, windDirection, windSpeed, windGust, qnh }) => {
+const RunwayWindCompass: React.FC<Props> = ({ runways, windDirection, windSpeed, windGust, qnh, size = 340 }) => {
+  const center = size / 2;
+  const radius = center - 40;
+  const scale = size / 340; // Scale factor relative to original size
   return (
     <svg width={size} height={size} className="bg-blue-600 rounded shadow-lg">
       {/* Compass background */}
@@ -31,7 +33,7 @@ const RunwayWindCompass: React.FC<Props> = ({ runways, windDirection, windSpeed,
         const angle = degToRad(i * 90);
         const x = center + (radius - 36) * Math.cos(angle);
         const y = center + (radius - 36) * Math.sin(angle) + 12;
-        return <text key={label} x={x} y={y} fill="#fff" fontSize={36} fontWeight="bold" textAnchor="middle">{label}</text>;
+        return <text key={label} x={x} y={y} fill="#fff" fontSize={36 * scale} fontWeight="bold" textAnchor="middle">{label}</text>;
       })}
       {/* Runways */}
       {runways.map((r, i) => {
@@ -60,8 +62,8 @@ const RunwayWindCompass: React.FC<Props> = ({ runways, windDirection, windSpeed,
               strokeWidth={2}
             />
             {/* Runway numbers at both ends */}
-            <text x={x1} y={y1} fill="#fff" fontSize={22} fontWeight="bold" textAnchor="middle" dy={-10}>{r.number.split('/')[0]}</text>
-            <text x={x2} y={y2} fill="#fff" fontSize={22} fontWeight="bold" textAnchor="middle" dy={-10}>{r.number.split('/')[1] || r.number.split('/')[0]}</text>
+            <text x={x1} y={y1} fill="#fff" fontSize={22 * scale} fontWeight="bold" textAnchor="middle" dy={-10 * scale}>{r.number.split('/')[0]}</text>
+            <text x={x2} y={y2} fill="#fff" fontSize={22 * scale} fontWeight="bold" textAnchor="middle" dy={-10 * scale}>{r.number.split('/')[1] || r.number.split('/')[0]}</text>
           </g>
         );
       })}
@@ -89,18 +91,18 @@ const RunwayWindCompass: React.FC<Props> = ({ runways, windDirection, windSpeed,
       {/* QNH (left) */}
       {qnh !== undefined && qnh !== null && (
         <g>
-          <text x={center - radius - 38} y={center - 10} fill="#fff" fontSize={34} fontWeight="bold" textAnchor="middle">{qnh}</text>
-          <text x={center - radius - 38} y={center + 28} fill="#fff" fontSize={20} textAnchor="middle">hPa</text>
+          <text x={center - radius - 38 * scale} y={center - 10 * scale} fill="#fff" fontSize={34 * scale} fontWeight="bold" textAnchor="middle">{qnh}</text>
+          <text x={center - radius - 38 * scale} y={center + 28 * scale} fill="#fff" fontSize={20 * scale} textAnchor="middle">hPa</text>
         </g>
       )}
       {/* Wind speed/gust (right) */}
       {windSpeed !== null && (
         <g>
-          <text x={center + radius + 38} y={center - 10} fill="#fff" fontSize={34} fontWeight="bold" textAnchor="middle">
+          <text x={center + radius + 38 * scale} y={center - 10 * scale} fill="#fff" fontSize={34 * scale} fontWeight="bold" textAnchor="middle">
             {windSpeed}
             {windGust && windGust > windSpeed ? `G${windGust}` : ''}
           </text>
-          <text x={center + radius + 38} y={center + 28} fill="#fff" fontSize={20} textAnchor="middle">knt</text>
+          <text x={center + radius + 38 * scale} y={center + 28 * scale} fill="#fff" fontSize={20 * scale} textAnchor="middle">knt</text>
         </g>
       )}
       <defs>
